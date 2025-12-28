@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en"> <!-- Class will be dynamically added by JS (e.g., auth-active, store-view) -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BAZAROOO - E-commerce Store</title>
+
+  <!-- External Stylesheets -->
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"> <!-- For Auth UI icons -->
+  <link rel="stylesheet" href="style.css"> <!-- Your Main store CSS -->
+
+  <!-- External Scripts - Order can matter -->
+  <!-- Tailwind (JIT mode often via script) -->
+  <script src="https://cdn.tailwindcss.com"></script> <!-- For Admin Login Modal styling -->
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Firebase SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-firestore-compat.js"></script>
+  <!-- END Firebase SDKs -->
+
+</head>
+<body> <!-- Class will be dynamically added by JS -->
+
+  <!-- === FLOWING ICON BACKGROUND FOR AUTH PAGE === -->
+  <div class="icon-flow-background">
+      <span>🛒</span>
+      <span>📦</span>
+      <span>💳</span>
+      <span>🏷️</span>
+      <span>🛍️</span>
+      <span>🚚</span>
+      <span>🎁</span>
+      <span>⭐</span>
+      <span>💸</span>
+      <span>📉</span>
+      <span>📈</span>
+      <span>🧑‍💻</span>
+      <!-- Add more spans for denser icon flow if desired -->
+  </div>
+  <!-- === END FLOWING ICON BACKGROUND === -->
+
+  <!-- === AUTH PAGE CONTAINER === -->
+  <div id="auth-page-container" style="display: flex;">
+    <div class="container" id="newAuthActualContainer">
+        <div class="form-container sign-up-container">
+            <form id="newSignUpForm">
+                <h1>Create Account</h1>
+                <div class="input-box">
+                    <input type="text" placeholder="Username" required id="newSignUpUsername" />
+                    <i class='bx bxs-user'></i>
+                </div>
+                <div class="input-box">
+                    <input type="email" placeholder="Email" required id="newSignUpEmail" />
+                    <i class='bx bxs-envelope'></i>
+                </div>
+                <div class="input-box">
+                    <input type="password" placeholder="Password" required id="newSignUpPassword" />
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                 <div class="input-box">
+                    <input type="password" placeholder="Confirm Password" required id="newSignUpConfirmPassword" />
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                <button type="submit" class="btn-primary">Sign Up</button>
+                <p class="mobile-toggle">Have an account? <a href="#" id="mobileSignInLink">Login</a></p>
+            </form>
+        </div>
+        <div class="form-container sign-in-container">
+            <form id="newSignInForm">
+                <h1>Login</h1>
+                <div class="input-box">
+                    <input type="text" placeholder="Email" required id="newSignInUsername" /> <!-- Should be type="email" id="newSignInEmail" -->
+                    <i class='bx bxs-envelope'></i>
+                </div>
+                <div class="input-box">
+                    <input type="password" placeholder="Password" required id="newSignInPassword" />
+                    <i class='bx bxs-lock-alt'></i>
+                </div>
+                <a href="#" class="forgot-password">Forgot your password?</a>
+                <button type="submit" class="btn-primary">Login</button>
+                <p class="mobile-toggle">No account? <a href="#" id="mobileSignUpLink">Sign Up</a></p>
+            </form>
+        </div>
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left-content">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login with your personal info</p>
+                    <button class="btn-ghost" id="signIn">Login</button>
+                </div>
+                <div class="overlay-panel overlay-right-content">
+                    <h1>Hello, Friend!</h1>
+                    <p>Enter your personal details and start your journey with us</p>
+                    <button class="btn-ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>
+  <!-- === END AUTH PAGE CONTAINER === -->
+
+  <!-- === ADMIN LOGIN MODAL (Uses Tailwind classes) === -->
+  <div id="admin-login-modal-container" style="display: none;" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+      <div class="bg-zinc-900 border border-orange-500 rounded-3xl shadow-2xl p-8 w-full max-w-md animate-fadeIn relative">
+          <button id="close-admin-login-modal-btn" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+              <i data-lucide="x" class="w-6 h-6"></i>
+          </button>
+          <h2 class="text-3xl font-bold mb-6 text-center text-orange-400">Admin Login</h2>
+          <input id="admin-username-input" type="text" placeholder="Admin Username" required class="mb-4 w-full px-4 py-2 rounded-lg bg-zinc-800 text-white placeholder-gray-400 border border-zinc-700 focus:ring-orange-500 focus:border-orange-500"/>
+          <input id="admin-password-input" type="password" placeholder="Admin Password" required class="mb-4 w-full px-4 py-2 rounded-lg bg-zinc-800 text-white placeholder-gray-400 border border-zinc-700 focus:ring-orange-500 focus:border-orange-500"/>
+          <p id="admin-login-error" class="text-red-500 text-sm mb-3" style="display:none;"></p>
+          <button id="admin-login-submit-btn" class="w-full py-2 rounded-lg bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-lg transition-all">Login as Admin</button>
+      </div>
+  </div>
+  <!-- === END ADMIN LOGIN MODAL === -->
+
+  <!-- === STORE PAGE CONTAINER === -->
+  <div id="store-page-container" style="display: none;">
+    <header class="store-header" id="main-store-header">
+      <div class="logo store-logo-text" aria-label="BAZAROOO Logo" tabindex="0">BAZAROOO</div>
+      <nav id="store-nav" aria-label="Primary Navigation">
+        <ul>
+          <li><a href="#home" tabindex="0">Home</a></li>
+          <li><a href="#electronics" tabindex="0">Electronics</a></li>
+          <li><a href="#footwear" tabindex="0">Footwear</a></li>
+          <li><a href="#fashion" tabindex="0">Fashion</a></li>
+          <li><a href="#home-appliances" tabindex="0">Home Appliances</a></li>
+          <li><a href="#food" tabindex="0">Food</a></li>
+          <li><a href="#health-essentials" tabindex="0">Health Essentials</a></li>
+          <li><a href="#beauty-products" tabindex="0">Beauty Products</a></li>
+        </ul>
+      </nav>
+      <div class="header-actions">
+        <button id="search-btn" aria-label="Search products"><i data-lucide="search"></i></button>
+        <button id="close-search-btn" aria-label="Close search bar" style="display: none;">✕</button>
+        <button id="my-orders-btn" aria-label="View My Orders"><i data-lucide="package-search"></i></button>
+        <button id="cart-btn" aria-label="Open shopping cart" aria-haspopup="true" aria-expanded="false">
+          <i data-lucide="shopping-cart"></i>
+          <span id="cart-count" aria-live="polite" aria-atomic="true">0</span>
+        </button>
+        <button id="logout-btn" aria-label="Logout"><i data-lucide="log-out"></i></button>
+      </div>
+      <div id="search-bar-container">
+        <input type="text" id="search-input" placeholder="Search products..." autocomplete="off" />
+        <ul id="search-suggestions"></ul>
+      </div>
+      <div id="filters-container">
+        <select id="filter-category">
+          <option value="">All Categories</option>
+          <!-- Populated dynamically -->
+        </select>
+        <select id="filter-price">
+          <option value="">All Prices</option>
+          <option value="0-500">Under ₹500</option>
+          <option value="500-1000">₹500 - ₹1000</option>
+          <option value="1000-5000">₹1000 - ₹5000</option>
+          <option value="5000-999999">Above ₹5000</option>
+        </select>
+      </div>
+    </header>
+    <main class="container" id="home" role="main">
+      <section class="hero-carousel" aria-label="Featured products carousel">
+          <div class="carousel-track">
+              <article class="carousel-slide" aria-roledescription="slide" aria-label="Smartphone showcase"><img src="https://images-na.ssl-images-BAZAROOO.com/images/I/710jnzKlDTL._AC_SL1500_.jpg" alt="Latest smartphone with a sleek design" /><div class="carousel-caption"><h1>Smartphones 2024</h1><p>Discover the fastest, brightest, and most powerful smartphones on the market.</p><button class="btn-primary store-btn-primary" aria-label="Shop Smartphones Now">Shop Now</button></div></article>
+              <article class="carousel-slide" aria-roledescription="slide" aria-label="Headphones showcase"><img src="https://images-na.ssl-images-BAZAROOO.com/images/I/61+JMJioBbL._AC_SL1500_.jpg" alt="Noise-cancelling wireless headphones in black" /><div class="carousel-caption"><h1>Audio Gear</h1><p>Experience crystal-clear sound with noise-cancelling headphones that bring music to life.</p><button class="btn-primary store-btn-primary" aria-label="Shop Audio Gear Now">Shop Now</button></div></article>
+              <article class="carousel-slide" aria-roledescription="slide" aria-label="Smart home devices showcase"><img src="https://images-na.ssl-images-BAZAROOO.com/images/I/61N3NyM2pZL._AC_SL1000_.jpg" alt="Smart home devices including speakers and security cameras" /><div class="carousel-caption"><h1>Smart Home</h1><p>Control your home with the latest smart devices designed for convenience and security.</p><button class="btn-primary store-btn-primary" aria-label="Shop Smart Home Devices">Shop Now</button></div></article>
+          </div>
+          <div class="carousel-nav"><button id="prevBtn" aria-label="Previous Slide">❮</button><button id="nextBtn" aria-label="Next Slide">❯</button></div>
+      </section>
+      <section class="products-section" id="electronics" aria-label="Electronics products"><h2 class="products-header">Electronics</h2><div class="products-grid" id="electronics-grid"></div></section>
+      <section class="products-section" id="footwear" aria-label="Footwear products"><h2 class="products-header">Footwear</h2><div class="products-grid" id="footwear-grid"></div></section>
+      <section class="products-section" id="fashion" aria-label="Fashion products"><h2 class="products-header">Fashion</h2><div class="products-grid" id="fashion-grid"></div></section>
+      <section class="products-section" id="home-appliances" aria-label="Home Appliances products"><h2 class="products-header">Home Appliances</h2><div class="products-grid" id="home-appliances-grid"></div></section>
+      <section class="products-section" id="food" aria-label="Food products"><h2 class="products-header">Food</h2><div class="products-grid" id="food-grid"></div></section>
+      <section class="products-section" id="health-essentials" aria-label="Health Essentials products"><h2 class="products-header">Health Essentials</h2><div class="products-grid" id="health-essentials-grid"></div></section>
+      <section class="products-section" id="beauty-products" aria-label="Beauty Products"><h2 class="products-header">Beauty Products</h2><div class="products-grid" id="beauty-products-grid"></div></section>
+    </main>
+    <div id="cart-modal" role="dialog" aria-modal="true" aria-labelledby="cart-header" tabindex="-1">
+        <header id="cart-header">Cart<button id="cart-close-btn" aria-label="Close shopping cart">×</button></header>
+        <div id="cart-content" tabindex="0" aria-live="polite" aria-relevant="additions removals"></div>
+        <footer id="cart-footer">
+            <div id="cart-total">Total: $0.00</div>
+            <button id="cart-checkout-btn" class="btn-primary store-btn-primary" tabindex="0">Proceed to Checkout</button>
+        </footer>
+    </div>
+  </div>
+  <!-- === END STORE PAGE CONTAINER === -->
+
+  <!-- === PRODUCT DETAIL CONTAINER === -->
+  <div id="product-detail-container" class="container product-detail-main-container" style="display: none;">
+    <div class="product-detail-grid">
+      <div class="product-image-gallery">
+        <div class="main-image">
+          <img id="main-product-image" src="..." alt="..." />
+        </div>
+        <div class="thumbnail-row">
+          <!-- Thumbnails will be populated by script.js -->
+        </div>
+      </div>
+      <div class="product-detail-info">
+        <h1 id="product-detail-title" class="product-title">Product Title</h1>
+        <p id="product-detail-price" class="product-price">$0.00</p>
+        <div id="product-detail-rating">★★★★☆</div>
+        <p id="product-detail-stock" class="mb-3">In Stock: 0</p>
+        <div id="product-detail-description" class="product-description">
+          This is where the detailed product description will appear.
+        </div>
+        <div class="product-detail-actions">
+          <button id="product-detail-add-to-cart-btn" class="btn-primary store-btn-primary">Add to Cart</button>
+          <button id="product-detail-back-btn"><i data-lucide="arrow-left"></i> Back to Shop</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- === END PRODUCT DETAIL CONTAINER === -->
+
+  <!-- === CHECKOUT PAGE CONTAINER === -->
+  <div id="checkout-page-container" style="display: none;">
+  <div class="checkout-header">
+    <h1 class="checkout-title">Checkout</h1>
+    <button id="back-to-store-btn" aria-label="Back to store">
+      <i data-lucide="arrow-left" style="vertical-align: middle; margin-right: 5px;"></i> Back to Store
+    </button>
+  </div>
+  <div class="checkout-steps">
+    <div class="checkout-step" data-step="1">
+      <h2>1. Shipping Details</h2>
+      <form id="checkout-address-form" class="checkout-form">
+        <div><label for="checkout-name">Full Name</label><input type="text" id="checkout-name" name="name" required></div>
+        <div><label for="checkout-email">Email</label><input type="email" id="checkout-email" name="email" required></div>
+        <div><label for="checkout-address">Address</label><input type="text" id="checkout-address" name="address" required></div>
+        <div><label for="checkout-city">City</label><input type="text" id="checkout-city" name="city" required></div>
+        <div><label for="checkout-postal">Postal Code</label><input type="text" id="checkout-postal" name="postal" required></div>
+        <div><label for="checkout-phone">Phone (Optional)</label><input type="tel" id="checkout-phone" name="phone"></div>
+        <button type="button" class="btn-primary store-btn-primary" id="checkout-next-to-delivery">Next: Delivery Time</button>
+      </form>
+    </div>
+    <div class="checkout-step" data-step="2" style="display:none;">
+      <h2>2. Delivery Time</h2>
+      <div>
+        <label><input type="radio" name="delivery-time" value="standard" checked> Standard (3-5 days, Free)</label><br>
+        <label><input type="radio" name="delivery-time" value="express"> Express (1-2 days, ₹99)</label>
+      </div>
+      <button type="button" class="btn-primary store-btn-primary" id="checkout-back-to-address">Back</button>
+      <button type="button" class="btn-primary store-btn-primary" id="checkout-next-to-payment">Next: Payment</button>
+    </div>
+    <div class="checkout-step" data-step="3" style="display:none;">
+      <h2>3. Payment Method</h2>
+      <div id="payment-methods-grid">
+        <button class="payment-method-btn" data-method="CARD"><i data-lucide="credit-card" class="payment-icon"></i> Credit/Debit Card</button>
+        <button class="payment-method-btn" data-method="PAYPAL"><i data-lucide="credit-card" class="payment-icon"></i> PayPal</button>
+        <button class="payment-method-btn" data-method="UPI"><i data-lucide="smartphone-charging" class="payment-icon"></i> UPI</button>
+        <button class="payment-method-btn active" data-method="COD"><i data-lucide="truck" class="payment-icon"></i> Cash on Delivery</button>
+      </div>
+      <div id="upi-details-container" style="display: none; margin-top:15px;">
+        <label for="upi-id-input" style="font-size: 0.9rem; color: #ccc; margin-bottom: 5px;">Enter UPI ID:</label>
+        <input type="text" id="upi-id-input" name="upiId" placeholder="yourname@bank">
+      </div>
+      <div id="card-details-placeholder" class="payment-method-details" style="display: none;">
+        <p>Credit/Debit Card form would appear here.</p>
+      </div>
+      <div id="paypal-details-placeholder" class="payment-method-details" style="display: none;">
+        <p>PayPal integration would proceed here.</p>
+      </div>
+      <button type="button" class="btn-primary store-btn-primary" id="checkout-back-to-delivery">Back</button>
+      <button type="button" class="btn-primary store-btn-primary" id="checkout-next-to-review">Next: Review</button>
+    </div>
+    <div class="checkout-step" data-step="4" style="display:none;">
+      <h2>4. Review & Place Order</h2>
+      <div id="checkout-review-summary"></div>
+      <button type="button" class="btn-primary store-btn-primary" id="checkout-back-to-payment">Back</button>
+      <button type="button" class="btn-primary store-btn-primary" id="place-order-btn">Place Order</button>
+    </div>
+  </div>
+</div>
+  <!-- === END CHECKOUT PAGE CONTAINER === -->
+
+  <!-- === MY ORDERS PAGE CONTAINER === -->
+  <div id="my-orders-page-container" style="display: none;">
+    <header class="store-header" id="my-orders-header"><div class="logo store-logo-text">My Orders</div><button id="my-orders-back-to-store-btn" aria-label="Back to store"><i data-lucide="arrow-left" style="vertical-align: middle; margin-right: 5px;"></i> Back to Store</button></header>
+    <main class="container my-orders-main"><h2 class="my-orders-page-title">Your Order History</h2><div id="my-orders-list-container"></div></main>
+  </div>
+  <!-- === END MY ORDERS PAGE CONTAINER === -->
+
+  <!-- === IMAGE ZOOM MODAL === -->
+  <div id="image-zoom-modal" class="image-zoom-modal" style="display:none;">
+  <div class="zoom-modal-content" style="position:relative;">
+    <img id="zoomed-image" src="" alt="Zoomed product image" style="max-width:100%;max-height:90vh;display:block;margin:auto;cursor:grab;">
+  </div>
+</div>
+  <!-- === END IMAGE ZOOM MODAL === -->
+
+  <div id="search-results-page-container" style="display: none;">
+  <header class="store-header">
+    <div class="logo store-logo-text">Search Results</div>
+    <button id="search-back-to-store-btn" aria-label="Back to Store"><i data-lucide="arrow-left"></i> Back to Store</button>
+  </header>
+  <main class="container">
+    <h2 class="products-header" id="search-results-title">Results for: <span id="search-term"></span></h2>
+    <div class="products-grid" id="search-results-grid"></div>
+  </main>
+</div>
+
+<div id="order-details-modal" class="order-details-modal" style="display:none;" tabindex="-1" aria-modal="true" role="dialog">
+  <div class="order-details-modal-content">
+    <button id="close-order-details-modal" class="order-details-modal-close" aria-label="Close">&times;</button>
+    <h2>Order Details</h2>
+    <div id="order-details-content"></div>
+  </div>
+</div>
+
+<div id="order-image-zoom-modal" class="image-zoom-modal" style="display:none;">
+  <div class="zoom-modal-content" style="position:relative;">
+    <img id="order-zoomed-image" src="" alt="Zoomed product image" style="max-width:100%;max-height:90vh;display:block;margin:auto;cursor:grab;">
+  </div>
+</div>
+
+  <!-- Contact/Profile Section -->
+<footer id="contact-profile-footer" class="contact-profile-footer" style="display:none;">
+  <div class="footer-content" style="width:100%; flex-wrap:wrap; justify-content:space-between; gap:40px;">
+    <div class="footer-section">
+      <h3 class="footer-title">Get to Know Us</h3>
+      <ul class="footer-list">
+        <li><a href="#" id="about-bazarooo-link" class="footer-link">About BAZAROOO</a></li>
+        <li>Careers</li>
+        <li>Press Releases</li>
+        <li>BAZAROOO Science</li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3 class="footer-title">Connect with Us</h3>
+      <ul class="footer-list">
+        <li><a href="#" class="footer-link">Facebook</a></li>
+        <li><a href="#" class="footer-link">Twitter</a></li>
+        <li><a href="#" class="footer-link">Instagram</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3 class="footer-title">Make Money with Us</h3>
+      <ul class="footer-list">
+        <li><a href="#" class="footer-link">Sell on BAZAROOO</a></li>
+        <li><a href="#" class="footer-link">Sell under BAZAROOO Accelerator</a></li>
+        <li><a href="#" class="footer-link">Protect and Build Your Brand</a></li>
+        <li><a href="#" class="footer-link">BAZAROOO Global Selling</a></li>
+        <li><a href="#" class="footer-link">Supply to BAZAROOO</a></li>
+        <li><a href="#" class="footer-link">Become an Affiliate</a></li>
+        <li><a href="#" class="footer-link">Fulfilment by BAZAROOO</a></li>
+        <li><a href="#" class="footer-link">Advertise Your Products</a></li>
+        <li><a href="#" class="footer-link">BAZAROOO Pay on Merchants</a></li>
+      </ul>
+    </div>
+    <div class="footer-section">
+      <h3 class="footer-title">Let Us Help You</h3>
+      <ul class="footer-list">
+        <li><a href="#" class="footer-link">Your Account</a></li>
+        <li><a href="#" class="footer-link">Returns Centre</a></li>
+        <li><a href="#" class="footer-link">Recalls and Product Safety Alerts</a></li>
+        <li><a href="#" class="footer-link">100% Purchase Protection</a></li>
+        <li><a href="#" class="footer-link">BAZAROOO App Download</a></li>
+        <li><a href="#" class="footer-link">Help</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+  <script src="script.js"></script> <!-- Your main script, ensure it's loaded last -->
+  <script>
+    document.getElementById('main-product-image')?.addEventListener('click', function() {
+        openImageZoom(this.src, this.alt);
+    });
+  </script>
+</body>
+</html>

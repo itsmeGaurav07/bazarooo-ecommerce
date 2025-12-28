@@ -1,0 +1,488 @@
+/* --- Global Font Imports & Base Reset for Admin Dashboard --- */
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;900&display=swap'); /* Added 900 for logo */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body { /* For admin_dashboard.html */
+  font-family: 'Roboto', sans-serif;
+  background: #121212;
+  color: #eee;
+  height: 100vh; /* Make body take full viewport height */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* PREVENT BODY FROM SCROLLING - let children handle it */
+}
+a {
+  text-decoration: none;
+  color: inherit;
+}
+img {
+  max-width: 100%;
+  display: block;
+}
+
+/* Admin Header */
+header.admin-panel-header {
+  background: #0f1111cc;
+  backdrop-filter: saturate(180%) blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 30px;
+  border-bottom: 1px solid #222;
+  user-select: none;
+  flex-shrink: 0; /* Prevent header from shrinking if content is too large */
+}
+.logo.admin-logo-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 900;
+  font-size: 1.8rem;
+  background: linear-gradient(45deg, #ff9900, #ffcc33);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  text-shadow: 0 0 12px #ffbb33cc;
+  letter-spacing: 1.5px;
+}
+a.admin-logout-button {
+    background: #d9534f;
+    color: #fff !important; /* Ensure text color is white */
+    border: none;
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-decoration: none !important;
+}
+a.admin-logout-button:hover {
+    background-color: #c9302c;
+}
+
+
+/* Admin Main content wrapper */
+.admin-wrapper {
+  display: flex;
+  flex: 1; /* CRITICAL: Allows this wrapper to take up remaining vertical space */
+  min-height: 0; /* CRITICAL: For flex children with overflow, prevents them from expanding parent indefinitely */
+  overflow: hidden; /* Let children handle their own scroll */
+}
+
+/* Admin Sidebar */
+.admin-sidebar {
+  width: 240px;
+  background: #0f1111dd; /* Slightly more opaque than store header */
+  border-right: 1px solid #222;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  user-select: none;
+  transition: width 0.3s ease;
+  flex-shrink: 0;
+  overflow-y: auto; /* Allow sidebar to scroll if it has too many items */
+}
+.admin-sidebar nav button.admin-nav-btn {
+  background: none;
+  border: none;
+  width: 100%;
+  text-align: left;
+  padding: 15px 30px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #ffbb33;
+  cursor: pointer;
+  border-left: 4px solid transparent;
+  transition: background 0.3s, border-color 0.3s, padding 0.3s ease;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.admin-sidebar nav button.admin-nav-btn:hover,
+.admin-sidebar nav button.admin-nav-btn.active {
+  background: #1f1f1f;
+  border-left-color: #ffcc33;
+  outline: none;
+}
+.admin-sidebar nav button.admin-nav-btn:disabled {
+    color: #555;
+    cursor: not-allowed;
+}
+.admin-sidebar nav button.admin-nav-btn:disabled:hover {
+    background: none;
+    border-left-color: transparent;
+}
+
+
+/* Admin Content area */
+.admin-content-area {
+  flex-grow: 1; /* Takes up available horizontal space */
+  padding: 30px 40px;
+  overflow-y: auto; /* CRITICAL: THIS MAKES THE CONTENT AREA SCROLLABLE */
+  min-height: 0; /* Important for flex scroll context */
+}
+.admin-content-area h1.admin-section-header {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 2.5rem;
+  color: #ffbb33;
+  margin-bottom: 24px;
+  text-shadow: 0 0 10px #ff9900bb;
+  user-select: none;
+}
+
+/* Admin Table styles */
+.admin-table-container {
+  background: #1e1e1e;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgb(255 153 0 / 0.3);
+  overflow-x: auto; /* Allow horizontal scroll for table if needed */
+  max-width: 100%;
+}
+.admin-table-container table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 900px; /* Adjusted for more columns (incl. other images count) */
+  table-layout: auto;
+}
+.admin-table-container thead {
+  background: #0f1111;
+  position: sticky; /* Makes header sticky during vertical scroll within table-container */
+  top: 0;
+  z-index: 10; /* Ensure it stays above table content */
+}
+.admin-table-container th, .admin-table-container td {
+  padding: 12px 16px;
+  border-bottom: 1px solid #333;
+  color: #ffbb33;
+  font-weight: 600;
+  font-size: 0.95rem;
+  text-align: left;
+  vertical-align: middle;
+  white-space: nowrap; /* Prevent text wrapping in header cells */
+}
+.admin-table-container tbody td {
+  color: #eee;
+  font-weight: 400;
+  white-space: normal; /* Allow text wrapping in body cells if needed */
+}
+.admin-table-container tbody tr:hover {
+  background: #222;
+}
+.admin-table-container td img {
+  border-radius: 8px;
+  max-height: 60px;
+  max-width: 60px;
+  object-fit: contain;
+  background-color: #2a2a2a; /* Dark background for images */
+}
+.admin-table-container td.order-items-cell { /* For order items specifically */
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap; /* Keep this nowrap for the items summary */
+}
+
+
+/* Admin Buttons */
+.admin-btn {
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 700;
+  color: #3a1f00;
+  background: linear-gradient(90deg, #ff9900, #ffcc33);
+  transition: background 0.3s ease, transform 0.1s ease;
+  user-select: none;
+}
+.admin-btn:hover,
+.admin-btn:focus {
+  background: linear-gradient(90deg, #ffcc33, #ff9900);
+  outline: none;
+  transform: translateY(-1px);
+}
+.admin-btn:active {
+    transform: translateY(0px);
+}
+.admin-btn-sm {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+.admin-btn-edit {
+  background: #007185; /* Teal */
+  color: #fff;
+}
+.admin-btn-edit:hover,
+.admin-btn-edit:focus {
+  background: #004f59;
+}
+.admin-btn-delete, .admin-btn-cancel { /* Cancel uses delete style */
+  background: #d9534f; /* Red */
+  color: #fff;
+}
+.admin-btn-delete:hover, .admin-btn-delete:focus,
+.admin-btn-cancel:hover, .admin-btn-cancel:focus {
+  background: #a32725;
+}
+button.admin-btn-add { /* For "+ Add New Product" button */
+  margin-bottom: 16px;
+}
+.admin-form-actions .admin-btn { /* Ensure buttons in form actions don't have extra margin */
+    margin-bottom: 0;
+}
+
+
+/* Admin Form popup overlay */
+.admin-overlay-style {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0,0,0,0.7);
+  display: none; /* Initially hidden */
+  z-index: 1000; /* Below popup, above admin content */
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.admin-overlay-style.active {
+  display: block;
+  opacity: 1;
+}
+
+/* Admin Form popup */
+.admin-form-popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 550px; /* Slightly increased width for more fields */
+  max-width: 95vw;
+  max-height: 90vh; /* Allow vertical scrolling within popup */
+  overflow-y: auto; /* Make popup scrollable */
+  background: #1e1e1e;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgb(255 153 0 / 0.5);
+  transform: translate(-50%, -50%) scale(0.95); /* Initial state for animation */
+  padding: 24px 32px;
+  z-index: 1001; /* Above overlay */
+  display: none; /* Initially hidden */
+  flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.admin-form-popup.active {
+  display: flex;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+.admin-form-popup h2 {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  color: #ffbb33;
+  margin-bottom: 24px;
+  user-select: none;
+  text-align: center;
+}
+.admin-form-group {
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+}
+.admin-form-group label {
+  margin-bottom: 6px;
+  font-weight: 600;
+  color: #ffcc33;
+  font-size: 0.9rem;
+}
+.admin-form-group input[type="text"],
+.admin-form-group input[type="number"],
+.admin-form-group input[type="url"],
+.admin-form-group select,
+.admin-form-group textarea {
+  background: #121212;
+  border: 1.5px solid #333;
+  border-radius: 8px;
+  padding: 10px 12px;
+  color: #eee;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+  font-family: 'Roboto', sans-serif;
+}
+.admin-form-group textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+.admin-form-group input[type="text"]:focus,
+.admin-form-group input[type="number"]:focus,
+.admin-form-group input[type="url"]:focus,
+.admin-form-group select:focus,
+.admin-form-group textarea:focus {
+  border-color: #ffbb33;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(255, 187, 51, 0.3);
+}
+
+.admin-form-group-inline {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.admin-form-group-inline .admin-form-group-half {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.form-field-note {
+  font-size: 0.8em;
+  color: #aaa;
+  margin-top: 4px;
+}
+.form-image-preview {
+  max-width: 100px;
+  max-height: 100px;
+  margin-top: 10px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background-color: #2a2a2a;
+  object-fit: contain;
+  display: none;
+}
+
+/* === NEW: Styles for Additional Image URL Inputs === */
+.admin-additional-images-section {
+  margin-top: 20px; /* Add some space before this section */
+  margin-bottom: 16px; /* Add some space after this section */
+  padding: 15px;
+  border: 1px dashed #444; /* Visually group them slightly */
+  border-radius: 8px;
+  background-color: #181818; /* Slightly different background for visual grouping */
+}
+.admin-additional-images-section .admin-form-group-label { /* For the "Additional Image URLs" text */
+  font-weight: 600;
+  color: #ffcc33;
+  font-size: 1rem; /* Match other labels */
+  margin-bottom: 12px;
+  display: block; /* Make it a block to take full width */
+}
+.admin-additional-images-section .admin-form-group {
+  margin-bottom: 10px; /* Spacing between each additional image input group */
+}
+/* Remove bottom margin for the last input group within this section to align with section padding */
+.admin-additional-images-section .admin-form-group:last-of-type {
+  margin-bottom: 0;
+}
+.admin-additional-images-section small.form-field-note {
+    margin-top: 8px; /* Consistent note spacing */
+}
+/* === END: Styles for Additional Image URL Inputs === */
+
+
+.admin-form-actions {
+  margin-top: 20px; /* Ensure enough space after the last form group */
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* Screen reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+
+/* Admin Responsive */
+@media (max-width: 768px) {
+  .admin-sidebar {
+    width: 60px; /* Collapsed width */
+  }
+  .admin-sidebar nav button.admin-nav-btn {
+    padding-left: 18px; /* Adjust for icon space if you add them */
+    padding-right: 18px;
+    font-size: 0; /* Hide text */
+    justify-content: center; /* Center icon if you add it */
+    position: relative;
+  }
+  .admin-sidebar nav button.admin-nav-btn::after {
+    content: attr(data-label);
+    position: absolute;
+    left: 100%; /* Position to the right of the button */
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 10px; /* Space from sidebar */
+    background: #0f1111cc;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 0.9rem; /* Make tooltip text readable */
+    white-space: nowrap;
+    color: #ffbb33;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 2000; /* Ensure tooltip is on top */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+  }
+  .admin-sidebar nav button.admin-nav-btn:hover::after,
+  .admin-sidebar nav button.admin-nav-btn:focus::after {
+    opacity: 1;
+    visibility: visible;
+  }
+  .admin-content-area {
+    padding: 20px;
+  }
+  .admin-content-area h1.admin-section-header {
+    font-size: 1.8rem;
+  }
+  .admin-form-group-inline {
+    flex-direction: column; /* Stack inline items on smaller screens */
+    gap: 16px;
+  }
+  .admin-form-group-inline .admin-form-group-half {
+    width: 100%; /* Full width when stacked */
+  }
+}
+
+@media (max-width: 600px) {
+  header.admin-panel-header {
+    padding: 10px 15px;
+  }
+  .logo.admin-logo-text {
+    font-size: 1.5rem;
+  }
+  .admin-table-container {
+    border-radius: 10px;
+  }
+  .admin-table-container table {
+    min-width: 500px; /* Adjust min-width for smaller tables */
+  }
+  .admin-table-container th, .admin-table-container td {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+  .admin-form-popup {
+    width: 90vw;
+    padding: 20px;
+  }
+  .admin-form-popup h2 {
+    font-size: 1.3rem;
+  }
+}
+
+.admin-currency-converter {
+    margin-top: 8px;
+    color: #ff9900;
+    font-size: 0.95rem;
+}
+.admin-currency-converter #admin-rupees-converted {
+    font-weight: bold;
+    color: #ffd700;
+}

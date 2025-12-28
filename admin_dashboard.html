@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin Dashboard - BAZAROOO</title>
+  <link rel="stylesheet" href="admin_style.css">
+</head>
+<body>
+  <header class="admin-panel-header">
+    <div class="logo admin-logo-text" tabindex="0" aria-label="BAZAROOO Admin Panel Logo">BAZAROOO Admin</div>
+    <a href="index.html#auth" class="admin-logout-button">Logout & Back to Store</a>
+  </header>
+
+  <div class="admin-wrapper">
+    <aside class="admin-sidebar" role="navigation" aria-label="Admin panel navigation">
+      <nav>
+        <button class="admin-nav-btn active" data-label="Products" aria-controls="admin-products-section" aria-selected="true" tabindex="0">Products</button>
+        <button class="admin-nav-btn" data-label="Orders" aria-controls="admin-orders-section" aria-selected="false" tabindex="0">Orders</button>
+      </nav>
+    </aside>
+
+    <main class="admin-content-area">
+      <!-- Admin Products Section -->
+      <section id="admin-products-section" tabindex="0" aria-label="Manage Products">
+        <h1 class="admin-section-header">Manage Products</h1>
+        <button class="admin-btn admin-btn-add" id="admin-btn-add-product" aria-haspopup="dialog" aria-controls="admin-product-form-popup" aria-expanded="false">+ Add New Product</button>
+        <div class="admin-table-container" tabindex="0" aria-live="polite" aria-relevant="additions removals">
+          <table aria-describedby="admin-products-desc">
+            <caption id="admin-products-desc" class="sr-only">Product list with options to edit or delete</caption>
+            <thead>
+              <tr>
+                <th>Firestore ID</th>
+                <th>SKU</th>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Price (₹)</th>
+                <th>Rating</th>
+                <th>Stock</th>
+                <th>Image</th>
+                <th>Other Imgs</th> <!-- New Column for count of other images -->
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="admin-product-list-tbody">
+              <!-- Products rendered here by admin_script.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Admin Orders Section -->
+      <section id="admin-orders-section" aria-label="Manage Orders" hidden>
+        <h1 class="admin-section-header">Manage Orders</h1>
+        <div class="admin-table-container" tabindex="0" aria-live="polite">
+          <table>
+            <caption class="sr-only">Order list with customer and shipping details</caption>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer Name</th>
+                <th>Email</th>
+                <th>Address</th>
+                <th>City</th>
+                <th>Postal</th>
+                <th>Phone</th>
+                <th>Total ($)</th>
+                <th>Payment Method</th>
+                <th>Items</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="admin-order-list-tbody">
+              <!-- Orders rendered here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Admin Overlay for Product Form Popup -->
+  <div id="admin-overlay" class="admin-overlay-style" tabindex="-1" aria-hidden="true"></div>
+
+  <!-- Admin Product Form Popup -->
+  <section role="dialog" aria-modal="true" aria-labelledby="admin-form-title" class="admin-form-popup" id="admin-product-form-popup" aria-hidden="true" tabindex="-1">
+    <h2 id="admin-form-title">Add New Product</h2>
+    <form id="admin-product-form" novalidate>
+      <input type="hidden" id="admin-product-firestore-id-field" /> <!-- For storing Firestore doc ID during edit -->
+
+      <div class="admin-form-group">
+        <label for="admin-product-custom-id-field">Custom Product ID (SKU / Internal ID)</label>
+        <input type="text" id="admin-product-custom-id-field" name="customId" placeholder="e.g., ELEC-001, FASH-BLK-LG" autocomplete="off" />
+        <small class="form-field-note">Optional. Unique identifier for your internal tracking. Used as main product ID if provided.</small>
+      </div>
+
+      <div class="admin-form-group">
+        <label for="admin-product-title-field">Title *</label>
+        <input type="text" id="admin-product-title-field" name="title" required minlength="3" maxlength="100" autocomplete="off" />
+      </div>
+
+      <div class="admin-form-group">
+        <label for="admin-product-description-field">Description *</label>
+        <textarea id="admin-product-description-field" name="description" rows="3" required minlength="10" placeholder="Detailed product description..."></textarea>
+      </div>
+
+      <div class="admin-form-group">
+        <label for="admin-product-category-field">Category *</label>
+        <select id="admin-product-category-field" name="category" required>
+          <option value="" disabled selected>Select category</option>
+          <option value="electronics">Electronics</option>
+          <option value="footwear">Footwear</option>
+          <option value="fashion">Fashion</option>
+          <option value="home-appliances">Home Appliances</option>
+          <option value="food">Food</option>
+          <option value="health-essentials">Health Essentials</option>
+          <option value="beauty-products">Beauty Products</option>
+          {/* <!-- Add more as needed --> */}
+        </select>
+      </div>
+
+      <div class="admin-form-group-inline">
+        <div class="admin-form-group admin-form-group-half">
+            <label for="admin-product-price-field">Price (₹) *</label>
+            <input type="number" id="admin-product-price-field" name="price" required min="0" step="0.01" autocomplete="off" />
+        </div>
+        <div class="admin-form-group admin-form-group-half">
+            <label for="admin-product-stock-field">Stock Quantity *</label>
+            <input type="number" id="admin-product-stock-field" name="stock" required min="0" step="1" autocomplete="off" />
+        </div>
+      </div>
+
+      <!-- Place this after your price input in the admin add/edit product form -->
+      <div class="admin-currency-converter" style="margin-top: 8px; color: #ff9900; font-size: 0.95rem;">
+        <span>₹ Rupees: </span>
+        <span id="admin-rupees-converted" style="font-weight: bold;">0</span>
+      </div>
+
+      <div class="admin-form-group">
+        <label for="admin-product-rating-field">Rating (0-5, e.g., 4.5) *</label>
+        <input type="number" id="admin-product-rating-field" name="rating" required min="0" max="5" step="0.1" autocomplete="off" />
+      </div>
+
+      <div class="admin-form-group">
+        <label for="admin-product-image-field">Main Image URL *</label>
+        <input type="url" id="admin-product-image-field" name="image" required autocomplete="off" placeholder="https://example.com/main-image.jpg" />
+         <img id="admin-image-preview" src="#" alt="Image Preview" class="form-image-preview" />
+      </div>
+
+      <!-- === NEW: Additional Image URLs Section === -->
+      <div class="admin-additional-images-section">
+        <p class="admin-form-group-label">Additional Image URLs (Optional)</p>
+        <div class="admin-form-group">
+          <label for="admin-product-other-image-1" class="sr-only">Additional Image URL 1</label>
+          <input type="url" id="admin-product-other-image-1" name="otherImage1" autocomplete="off" placeholder="https://example.com/other-image1.jpg" />
+        </div>
+        <div class="admin-form-group">
+          <label for="admin-product-other-image-2" class="sr-only">Additional Image URL 2</label>
+          <input type="url" id="admin-product-other-image-2" name="otherImage2" autocomplete="off" placeholder="https://example.com/other-image2.jpg" />
+        </div>
+        <div class="admin-form-group">
+          <label for="admin-product-other-image-3" class="sr-only">Additional Image URL 3</label>
+          <input type="url" id="admin-product-other-image-3" name="otherImage3" autocomplete="off" placeholder="https://example.com/other-image3.jpg" />
+        </div>
+        {/* <!-- You can add more fields like -4, -5 if desired by replicating the pattern --> */}
+        <small class="form-field-note">Provide direct URLs to additional product images for the gallery thumbnails.</small>
+      </div>
+      <!-- === END: Additional Image URLs Section === -->
+
+      <div class="admin-form-group">
+        <label for="admin-product-tags-field">Tags / Keywords (comma-separated)</label>
+        <input type="text" id="admin-product-tags-field" name="tags" placeholder="e.g., wireless, bluetooth, sale" autocomplete="off" />
+        <small class="form-field-note">Helps with search and filtering. Separate with commas.</small>
+      </div>
+
+      <div class="admin-form-actions">
+        <button type="button" class="admin-btn admin-btn-cancel" id="admin-btn-cancel-form">Cancel</button>
+        <button type="submit" class="admin-btn admin-btn-save">Save Product</button>
+      </div>
+    </form>
+  </section>
+
+  <script type="module" src="admin_script.js"></script>
+</body>
+</html>
